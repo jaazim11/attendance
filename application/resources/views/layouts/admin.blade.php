@@ -69,6 +69,12 @@
                                 <i class="fas fa-chart-pie"></i><span class="text-with-icon">{{ __("Reports") }}</span>
                             </a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link @if (str_contains(Route::currentRouteName(), 'shift')) active @endif" href="{{ route('shift.list') }}">
+                                <i class="fas fa-torii-gate"></i><span class="text-with-icon">{{ __("Shifts") }}</span>
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

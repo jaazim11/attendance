@@ -197,6 +197,16 @@ Route::group(['middleware' => 'auth'], function () {
 			Route::post('admin/leavegroups/update',  'Admin\FormOptionsController@updateLeaveGroups');
 			Route::get('admin/leavegroups/delete/{id}',  'Admin\FormOptionsController@deleteLeaveGroups');
 
+			#Shifts
+			Route::prefix('admin')->namespace('Admin')->name('shift.')->group(function(){
+				Route::get('list', 'ShiftController@getShifts')->name('list');
+				Route::get('add', 'ShiftController@createShift')->name('add');
+				Route::post('store', 'ShiftController@storeShift')->name('store');
+				Route::get('edit/{shift_id}', 'ShiftController@editShift')->name('edit');
+				Route::post('update/{shift_id}', 'ShiftController@updateShift')->name('update');
+				Route::get('delete/{shift_id}', 'ShiftController@deleteShift')->name('delete');
+			});
+
 		});
 
 		Route::group(['middleware' => 'employee'], function () {
