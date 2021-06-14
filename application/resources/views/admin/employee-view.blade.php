@@ -144,6 +144,18 @@
                         <input type="text" name="dateregularized" value="@isset($employee_data->dateregularized){{ $employee_data->dateregularized }}@endisset" class="form-control text-uppercase" readonly>
                     </div>
                 </div>
+
+                <p class="lead mt-4">{{ __("Employee Shift") }}</p>
+                <hr class="mt-0">
+
+                <div class="form-row">
+                    @foreach ($people_shift as $shift)
+                        <div class="form-group col-md-6">
+                            <label for="startdate">{{ __($shift['day']) }}</label>
+                            <input type="text" name="startdate" value="{{ $shift['shift_name']  }} - {{ $shift['shift_time']  }}" class="form-control text-uppercase" readonly>
+                        </div>
+                    @endforeach
+                </div>
             </div>
             <div class="card-footer text-right">
             </div>

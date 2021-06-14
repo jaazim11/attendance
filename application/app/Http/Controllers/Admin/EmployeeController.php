@@ -10,12 +10,14 @@
 namespace App\Http\Controllers\admin;
 
 use DB;
+use App\Shift;
 use App\Classes\Table;
-use App\Classes\Permission;
 use App\Http\Requests;
+use App\Classes\Permission;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use App\PeopleShift;
+use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
@@ -38,13 +40,15 @@ class EmployeeController extends Controller
 		$department = table::department()->get();
 		$jobtitle = table::jobtitle()->get();
 		$leavegroup = table::leavegroup()->get();
+		$shifts = Shift::get();
 
 	    return view('admin.employee-add', [
 	    	'employees' => $employee,
 	    	'company' => $company,
 	    	'department' => $department,
 	    	'jobtitle' => $jobtitle,
-	    	'leavegroup' => $leavegroup
+	    	'leavegroup' => $leavegroup,
+			'shifts' => $shifts
 	    ]);
 	}
 
@@ -158,6 +162,19 @@ class EmployeeController extends Controller
             ],
     	]);
 
+		// Update Shift
+		$people_shifts = [
+			'sunday_shift' => isset($request->sunday_shift) ? $request->sunday_shift : NULL,
+			'monday_shift' => isset($request->monday_shift) ? $request->monday_shift : NULL,
+			'tuesday_shift' => isset($request->tuesday_shift) ? $request->tuesday_shift : NULL,
+			'wednesday_shift' => isset($request->wednesday_shift) ? $request->wednesday_shift : NULL,
+			'thursday_shift' => isset($request->thursday_shift) ? $request->thursday_shift : NULL,
+			'friday_shift' => isset($request->friday_shift) ? $request->friday_shift : NULL,
+			'saturday_shift' => isset($request->saturday_shift) ? $request->saturday_shift : NULL,
+		];
+
+		$this->updateShiftOfEmployee($refId, $people_shifts);
+
     	return redirect('admin/employee/add')->with('success', trans("Successful registration")); 
     }
 
@@ -170,13 +187,15 @@ class EmployeeController extends Controller
 		$profile_photo = table::people()->select('avatar')->where('id', $id)->value('avatar');
 		$leavetype = table::leavetypes()->get();
 		$leavegroup = table::leavegroup()->get();
-
+		$people_shift = $this->getPeopleShifts($id);
+		
         return view('admin.employee-view', [
 	    	'employee' => $employee,
 	    	'employee_data' => $employee_data,
 	    	'profile_photo' => $profile_photo,
 	    	'leavetype' => $leavetype,
-			'leavegroup' => $leavegroup
+			'leavegroup' => $leavegroup,
+			'people_shift' => $people_shift
 	    ]);
 	}
 
@@ -191,6 +210,8 @@ class EmployeeController extends Controller
 		$department = table::department()->get();
 		$jobtitle = table::jobtitle()->get();
 		$leavegroup = table::leavegroup()->get();
+		$shifts = Shift::get();
+		$people_shift = PeopleShift::where('reference', $id)->first();
 
         return view('admin.employee-edit', [
 	    	'employee' => $employee,
@@ -198,7 +219,9 @@ class EmployeeController extends Controller
 	    	'company' => $company,
 	    	'department' => $department,
 	    	'jobtitle' => $jobtitle,
-	    	'leavegroup' => $leavegroup
+	    	'leavegroup' => $leavegroup,
+	    	'shifts' => $shifts,
+			'people_shift' => $people_shift
 	    ]);
     }
 
@@ -301,8 +324,120 @@ class EmployeeController extends Controller
 			'dateregularized' => $dateregularized,
     	]);
 
+		// Update Shift
+		$people_shifts = [
+			'sunday_shift' => isset($request->sunday_shift) ? $request->sunday_shift : NULL,
+			'monday_shift' => isset($request->monday_shift) ? $request->monday_shift : NULL,
+			'tuesday_shift' => isset($request->tuesday_shift) ? $request->tuesday_shift : NULL,
+			'wednesday_shift' => isset($request->wednesday_shift) ? $request->wednesday_shift : NULL,
+			'thursday_shift' => isset($request->thursday_shift) ? $request->thursday_shift : NULL,
+			'friday_shift' => isset($request->friday_shift) ? $request->friday_shift : NULL,
+			'saturday_shift' => isset($request->saturday_shift) ? $request->saturday_shift : NULL,
+		];
+
+		$this->updateShiftOfEmployee($id, $people_shifts);
+
     	return redirect('admin/employee')->with('success', trans("Update was successful"));
     }
+
+	/**
+	 * Update Employee Shift
+	 * @param Integer $people_id 
+	 * @param Array $shifts
+	 * @author Shani Singh
+	 */
+	public function updateShiftOfEmployee($people_id, $shifts)
+	{
+		try {
+			$people_shift = PeopleShift::updateOrCreate([
+				'reference' => $people_id
+			], $shifts);
+
+			return $people_shift;
+		} catch (\Throwable $th) {
+			throw $th;
+		}
+	}
+
+	/**
+	 * Get Shifts
+	 * @param Integer $people_id
+	 * @return Array Of Shifts
+	 * @author Shani Singh
+	 */
+	public function getPeopleShifts($id)
+	{
+		$people_shift = PeopleShift::where('reference',$id)->first();
+
+		return [
+			[
+				'day' => 'Sunday',
+				'shift_name' => (isset($people_shift) && $people_shift->sunday_shift) ? $this->getShiftName($people_shift->sunday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->sunday_shift) ? $this->getShiftTime($people_shift->sunday_shift) : '' 
+			],
+			[
+				'day' => 'Monday',
+				'shift_name' => (isset($people_shift) && $people_shift->monday_shift) ? $this->getShiftName($people_shift->monday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->monday_shift) ? $this->getShiftTime($people_shift->monday_shift) : ''
+			],
+			[
+				'day' => 'Tuesday',
+				'shift_name' => (isset($people_shift) && $people_shift->tuesday_shift) ? $this->getShiftName($people_shift->tuesday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->tuesday_shift) ? $this->getShiftTime($people_shift->tuesday_shift) : '' 
+			],
+			[
+				'day' => 'Wednesday',
+				'shift_name' => (isset($people_shift) && $people_shift->wednesday_shift) ? $this->getShiftName($people_shift->wednesday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->wednesday_shift) ? $this->getShiftTime($people_shift->wednesday_shift) : '' 
+			],
+			[
+				'day' => 'Thursday',
+				'shift_name' => (isset($people_shift) && $people_shift->thursday_shift) ? $this->getShiftName($people_shift->thursday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->thursday_shift) ? $this->getShiftTime($people_shift->thursday_shift) : ''
+			],
+			[
+				'day' => 'Friday',
+				'shift_name' => (isset($people_shift) && $people_shift->friday_shift) ? $this->getShiftName($people_shift->friday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->friday_shift) ? $this->getShiftTime($people_shift->friday_shift) : '' 
+			],
+			[
+				'day' => 'Saturday',
+				'shift_name' => (isset($people_shift) && $people_shift->saturday_shift) ? $this->getShiftName($people_shift->saturday_shift) : '', 
+				'shift_time' => (isset($people_shift) && $people_shift->saturday_shift) ? $this->getShiftTime($people_shift->saturday_shift) : '' 
+			],
+		];
+	}
+
+	/**
+	 * Get Shift Name
+	 * @param Integer $shift_id
+	 * @return String $shift_name
+	 * @author Shani Singh
+	 */
+	public function getShiftName($shift_id)
+	{
+		$shift = Shift::whereId($shift_id)->first();
+		if($shift){
+			return $shift->shift_name;
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get Shift Time
+	 * @param Integer $shift_id
+	 * @return String $shift_time
+	 * @author Shani Singh
+	 */
+	public function getShiftTime($shift_id)
+	{
+		$shift = Shift::whereId($shift_id)->first();
+		if($shift){
+			return $shift->start_time ." - ". $shift->end_time;
+		}
+		return '';
+	}
 
    	public function archive($id, Request $request)
     {

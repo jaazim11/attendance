@@ -201,6 +201,75 @@
                     </div>
                 </div>
 
+                <p class="lead mt-4">{{ __("Employee Shift") }}</p>
+                <hr class="mt-0">
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="sunday_shift">{{ __("Shift (Sunday)") }}</label>
+                        <select name="sunday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}" @if(isset($people_shift)) {{ ($people_shift->sunday_shift == $shift->id) ? 'selected' : '' }} @endif >{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="monday_shift">{{ __("Shift (Monday)") }}</label>
+                        <select name="monday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}" @if(isset($people_shift)) {{ ($people_shift->monday_shift == $shift->id) ? 'selected' : '' }} @endif >{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="tuesday_shift">{{ __("Shift (Tuesday)") }}</label>
+                        <select name="tuesday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}" @if(isset($people_shift)) {{ ($people_shift->tuesday_shift == $shift->id) ? 'selected' : '' }} @endif>{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="wednesday_shift">{{ __("Shift (Wednesday)") }}</label>
+                        <select name="wednesday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}"  @if(isset($people_shift)) {{ ($people_shift->wednesday_shift == $shift->id) ? 'selected' : '' }} @endif >{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="thursday_shift">{{ __("Shift (Thursday)") }}</label>
+                        <select name="thursday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}" @if(isset($people_shift)) {{ ($people_shift->thursday_shift == $shift->id) ? 'selected' : '' }} @endif >{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="friday_shift">{{ __("Shift (Friday)") }}</label>
+                        <select name="friday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}" @if(isset($people_shift)) {{ ($people_shift->friday_shift == $shift->id) ? 'selected' : '' }} @endif >{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="saturday_shift">{{ __("Shift (Saturday)") }}</label>
+                        <select name="saturday_shift" class="custom-select text-uppercase">
+                          <option value="" disabled selected>Choose...</option>
+                          @foreach ($shifts as $shift)
+                                <option value="{{$shift->id}}" @if(isset($people_shift)) {{ ($people_shift->saturday_shift == $shift->id) ? 'selected' : '' }} @endif>{{ __($shift->shift_name)}} ( {{$shift->start_time}} - {{$shift->end_time}} ) </option>
+                          @endforeach
+                        </select>
+                    </div>
+                </div>
+
             </div>
             <div class="card-footer text-right">
                 <input type="hidden" name="id" value="@isset($employee->id){{ $employee->id }}@endisset">

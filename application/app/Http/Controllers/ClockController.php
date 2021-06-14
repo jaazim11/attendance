@@ -10,10 +10,12 @@
 namespace App\Http\Controllers;
 
 use DB;
+use App\Shift;
 use Carbon\Carbon;
+use App\PeopleShift;
 use App\Classes\Table;
-use App\Classes\Permission;
 use App\Http\Requests;
+use App\Classes\Permission;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -131,7 +133,20 @@ class ClockController extends Controller
 
                 } else {
 
-                    $sched_in_time = table::schedules()->where([['idno', $idno], ['archive', 0]])->value('intime');
+                    // $sched_in_time = table::schedules()->where([['idno', $idno], ['archive', 0]])->value('intime');
+                    $sched_in_time = NULL;
+                    $now = Carbon::now()->format('l');
+                    $shift_name = strtolower($now).'_shift';
+
+                    $people_shift = PeopleShift::where('reference', $employee_id)->first($shift_name);
+                    if($people_shift){
+                        $shift_detail = Shift::whereId($people_shift->$shift_name)->first();
+
+                        if($shift_detail){
+                            $sched_in_time = $shift_detail->start_time;
+                        }
+                    }
+                    // dd($sched_in_time);
                     
                     if($sched_in_time == NULL)
                     {
@@ -205,13 +220,34 @@ class ClockController extends Controller
 
             } else {
                 
-                $sched_out_time = table::schedules()->where([['idno', $idno], ['archive', 0]])->value('outime');
-                
+                // $sched_out_time = table::schedules()->where([['idno', $idno], ['archive', 0]])->value('outime');
+                $sched_out_time = NULL;
+                $now = Carbon::now()->format('l');
+                $shift_name = strtolower($now).'_shift';
+
+                $people_shift = PeopleShift::where('reference', $employee_id)->first($shift_name);
+                if($people_shift){
+                    $shift_detail = Shift::whereId($people_shift->$shift_name)->first();
+
+                    if($shift_detail){
+                        $sched_out_time = $shift_detail->end_time;
+                    }
+                }
+                // dd($sched_out_time);
                 if($sched_out_time == NULL) 
                 {
                     $status_out = null;
 
                 } else {
+
+                    $max_end_time = Carbon::parse($sched_out_time)->addHours(2);
+                    $time_out_time = Carbon::parse($timeOUT);
+                    if($time_out_time->isAfter($max_end_time)){
+                        return response()->json([
+                            "error" => trans("Your Shift Ends, you are auto clocked out at ")." ".$max_end_time->toTimeString(),
+                        ]);
+                    }
+                    // dd($time_out_time, $max_end_time);
 
                     $sched_clock_out_time_24h = date("H.i", strtotime($sched_out_time));
 

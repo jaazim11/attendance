@@ -52,7 +52,7 @@ class ShiftController extends Controller
         try {
             $create_shift = Shift::create($request->all());
             if($create_shift){
-                return redirect()->route('shift.list');
+                return redirect()->route('shift.list')->with('success', trans("Update was successful"));
             }
 
             return redirect()->route('shift.add');
@@ -98,7 +98,7 @@ class ShiftController extends Controller
                 return redirect()->route('shift.list');
             }
 
-            return redirect()->route('shift.edit', ['shift_id' => $shift_id]);
+            return redirect()->route('shift.edit', ['shift_id' => $shift_id])->with('success', trans("Update was successful"));
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -118,7 +118,7 @@ class ShiftController extends Controller
                 return redirect()->route('shift.list');
             }
 
-            return redirect()->route('shift.list');
+            return redirect()->route('shift.list')->with('success', trans("Update was successful"));
         } catch (\Throwable $th) {
             throw $th;
         }
